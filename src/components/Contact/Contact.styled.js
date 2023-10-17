@@ -17,6 +17,9 @@ export const Item = styled.li`
     box-shadow: 10px 10px 12px 0px rgba(0, 0, 0, 0.75);
 
   button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-left: auto;
     height: 30px;
     min-width: 100px;

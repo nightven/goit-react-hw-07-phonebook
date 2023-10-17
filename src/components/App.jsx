@@ -1,40 +1,38 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { Phonebook } from './Phonebook/Phonebook';
-import { Contacts } from './Contacts/Contacts';
-import { Container, Label } from './App.styled';
-import { getContacts, getFilter } from 'redux/selectors';
-import { deleteContact } from 'redux/contactSlice';
-import { setFilter } from 'redux/filterSlice';
 
+import { Container, Label } from './App.styled';
+import { useGetContactsQuery } from 'redux/contactsSlice';
+import { useState } from 'react';
+import { Contacts } from './Contacts/Contacts';
+import { Toaster } from 'react-hot-toast';
 
 export const App = () => {
-  
-  const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
-  const filter = useSelector(getFilter);
+  const { data } = useGetContactsQuery();
+  const [filter, setFilter] = useState('');
+  let filteredContacts = [];
 
   //! delete a contact from state
-  const onDeleteContact = id => {
-    dispatch(deleteContact(id));
-  };
+  const onDeleteContact = id => {};
 
   //! set filter from input field
   const onInputChangeFilter = e => {
-    dispatch(setFilter(e.target.value.trim()));
+    setFilter(e.target.value.trim());
   };
 
   //! filtered contacts by name
-  const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
-  
+  if (data) {
+    filteredContacts = data.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
+  }
 
   return (
     <Container>
-      <Phonebook />
+      <Toaster position="top-center" reverseOrder={false} />
+      <Phonebook contacts={data} />
       <h2>Contacts</h2>
       {/* show search input if contacts isn't empty */}
-      {contacts.length === 0 ? (
+      {data?.length === 0 ? (
         <p>Empty</p>
       ) : (
         <div>
@@ -48,8 +46,7 @@ export const App = () => {
             />
           </Label>
           <Contacts
-         
-            contacts={filteredContacts}
+            contacts={filteredContacts ?? data}
             onDeleteContact={onDeleteContact}
           />
         </div>

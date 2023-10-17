@@ -1,20 +1,23 @@
-import { useDispatch, useSelector } from 'react-redux';
+
+import { useAddContactMutation } from 'redux/contactsSlice';
 import { Form } from './Phonebook.styled';
-import { getContacts, getName, getNumber } from 'redux/selectors';
-import { addContact, addName, addNumber } from 'redux/contactSlice';
+
+
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 
 
-export const Phonebook = () => {
-  const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
-  const name = useSelector(getName);
-  const number = useSelector(getNumber);
+export const Phonebook = ({contacts}) => {
+  
+  const[addContact ] =useAddContactMutation();
+  const [name, setName] = useState('')
+  const [number, setNumber] = useState('')
 
   //set state on input change
   const onChangeInput = evt => {
-    if (evt.target.name === 'name') dispatch(addName(evt.target.value));
-    if (evt.target.name === 'number') dispatch(addNumber(evt.target.value));
+    if (evt.target.name === 'name') setName(evt.target.value);
+    if (evt.target.name === 'number') setNumber(evt.target.value);
   };
 
   //submit form
@@ -22,13 +25,15 @@ export const Phonebook = () => {
     evt.preventDefault();
     const form = evt.target;
     const newContact = { name, number };
+   
     form.reset();
   
    // checking for the presence of this contact
   if (contacts.some(({ name }) => newContact.name === name)) {
     return alert(`${newContact.name} is already in contacts list`);
   }
-    dispatch(addContact(newContact));
+  addContact(newContact);
+  toast.success('Contact successfully added')
   };
 
   return (
@@ -40,6 +45,7 @@ export const Phonebook = () => {
           type="text"
           name="name"
           required
+          
           placeholder="Enter name"
           onChange={onChangeInput}
         />
@@ -48,6 +54,7 @@ export const Phonebook = () => {
           type="tel"
           name="number"
           required
+         
           placeholder="Enter number 123-45-67"
           onChange={onChangeInput}
         />
